@@ -3,7 +3,7 @@ import authReducer from "../features/auth/authSlice";
 import roleReducer from "../features/role/roleSlice.jsx";
 import notificationReducer from "../features/notifications/notificationSlice.js";
 
-import authorReducer from "../features/Auther/authorSlice";
+import authorReducer from "../features/author/authorSlice.jsx";
 
 export const store = configureStore({
   reducer: { 

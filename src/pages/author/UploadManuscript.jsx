@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import ManuscriptForm from "../../components/auther/ManuscriptForm.jsx";
-import { createManuscript } from "../../features/Auther/authorActions.jsx";
+import ManuscriptForm from "../../components/author/ManuscriptForm.jsx";
+import { createManuscript } from "../../features/author/authorActions.jsx";
 
 const UploadManuscript = () => {
   const dispatch = useDispatch();
