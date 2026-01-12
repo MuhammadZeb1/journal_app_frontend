@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   fetchMyManuscripts,
   deleteManuscript,
-  updateManuscript,
 } from "../../features/author/authorActions.jsx";
 import ManuscriptCard from "./ManuscriptCard.jsx";
-import ManuscriptForm from "./ManuscriptForm.jsx";
 
 const ManuscriptList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { manuscripts, loading, error } = useSelector((state) => state.author);
-  const [editing, setEditing] = useState(null);
 
   useEffect(() => {
     dispatch(fetchMyManuscripts());
@@ -23,29 +22,13 @@ const ManuscriptList = () => {
     }
   };
 
-  const handleEdit = (manuscript) => {
-    setEditing(manuscript);
-  };
-
-  const handleUpdate = (formData) => {
-    dispatch(updateManuscript({ id: editing._id, formData }));
-    setEditing(null);
+  const handleEdit = (id) => {
+    navigate(`/author/edit/${id}`); // navigate to edit page
   };
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow rounded">
       <h2 className="text-2xl font-bold mb-6">My Manuscripts</h2>
-
-      {editing && (
-        <div className="mb-6 p-4 border rounded bg-gray-50">
-          <h3 className="text-lg font-semibold mb-3">Edit Manuscript</h3>
-          <ManuscriptForm
-            initialData={editing}
-            onSubmit={handleUpdate}
-            loading={loading}
-          />
-        </div>
-      )}
 
       {loading && <p>Loading manuscripts...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -57,7 +40,7 @@ const ManuscriptList = () => {
             key={m._id}
             manuscript={m}
             onDelete={handleDelete}
-            onEdit={handleEdit}
+            onEdit={() => handleEdit(m._id)} // pass ID for navigation
           />
         ))}
       </div>

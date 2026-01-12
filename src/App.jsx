@@ -13,6 +13,7 @@ import Navbar from "./components/Navbar.jsx";
 import AdminApprove from "./components/admin/AdminApprove.jsx";
 import AdminPaperApprove from "./pages/admin/AdminApprovePage.jsx";
 import MyManuscripts from "./pages/author/MyManuscripts";
+import EditManuscript from "./pages/author/EditManuscript.jsx";
 // import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 // import AutherDashboard from "./pages/author/AuthorDashboard.jsx";
 
@@ -31,6 +32,8 @@ function App() {
         <Route path="/admin-paper-approve" element={<AdminPaperApprove />} />
         <Route path="/upload-manuscript" element={<UploadManuscript />} />
         <Route path="/my-manuscripts" element={<MyManuscripts />} />
+        <Route path="/author/edit/:id" element={<EditManuscript />} />
+
         </Routes>
       
     </>
