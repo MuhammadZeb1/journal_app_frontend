@@ -1,5 +1,5 @@
 import React from "react";
-import AuthorRequest from "../components/AuthorRequest.jsx";
+import AuthorRequest from "../../components/auther/AuthorRequest.jsx";
 
 export default function AuthorRequestPage() {
   return (

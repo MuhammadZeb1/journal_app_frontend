@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { requestExpert } from "../features/role/roleActions";
+import { requestExpert } from "../../features/role/roleActions";
 import { Send, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
 
 export default function AuthorRequest() {
