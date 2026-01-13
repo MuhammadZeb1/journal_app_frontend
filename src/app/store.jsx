@@ -5,6 +5,7 @@ import notificationReducer from "../features/notifications/notificationSlice.js"
 
 import authorReducer from "../features/author/authorSlice.jsx";
 import adminManuscriptsReducer from "../features/admin/adminSlice.jsx";
+import reviewerReducer from "../features/reviewer/reviewerSlice.jsx";
 
 
 export const store = configureStore({
@@ -14,5 +15,6 @@ export const store = configureStore({
     role: roleReducer,
     author: authorReducer,
     adminManuscripts: adminManuscriptsReducer,
+    reviewer: reviewerReducer,
  },
 });

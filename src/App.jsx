@@ -16,6 +16,7 @@ import MyManuscripts from "./pages/author/MyManuscripts";
 import EditManuscript from "./pages/author/EditManuscript.jsx";
 import AdminManuscripts from "./pages/admin/AdminManuscripts.jsx";
 import AssignReviewerPage from "./components/admin/AssignReviewerPage.jsx";
+import ReviewerDashboard from "./pages/reviewer/ReviewerDashboard.jsx";
 // import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 // import AutherDashboard from "./pages/author/AuthorDashboard.jsx";
 
@@ -38,6 +39,7 @@ function App() {
 
         <Route path="/admin/manuscripts" element={<AdminManuscripts />} />
         <Route path="/admin/assign-reviewer/:manuscriptId" element={<AssignReviewerPage />} />
+        <Route path="/reviewer/dashboard" element={<ReviewerDashboard />} />
 
         </Routes>
       
