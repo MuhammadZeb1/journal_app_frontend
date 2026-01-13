@@ -1,6 +1,7 @@
+// components/admin/AdminManuscriptCard.jsx
 import React from "react";
-import API from "../../api/authApi";
-import { FileText, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const statusStyles = {
   pending: "bg-amber-100 text-amber-700 border-amber-200",
@@ -11,82 +12,60 @@ const statusStyles = {
   published: "bg-cyan-100 text-cyan-700 border-cyan-200",
 };
 
-const AdminManuscriptCard = ({ manuscript }) => {
-  if (!manuscript) return null; // safety check
-
-  const handleView = async () => {
-    try {
-      const res = await API.get(`/admin/manuscripts/${manuscript._id}/file`, {
-        responseType: "blob",
-      });
-
-      const fileURL = URL.createObjectURL(
-        new Blob([res.data], { type: manuscript.contentType })
-      );
-      window.open(fileURL, "_blank");
-      setTimeout(() => URL.revokeObjectURL(fileURL), 5000);
-    } catch (err) {
-      alert("Failed to open manuscript");
-    }
-  };
+const AdminManuscriptCard = ({ manuscript, onRead }) => {
+  const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col border rounded-lg shadow hover:shadow-lg transition p-4 bg-white">
-      
+    <div className="flex gap-4 border rounded-lg p-4 bg-white shadow">
       {/* Thumbnail */}
-      <div className="w-full h-40 mb-3 relative">
+      <div className="w-28 h-36 flex-shrink-0">
         {manuscript.imageUrl ? (
           <img
             src={manuscript.imageUrl}
-            alt="Manuscript Thumbnail"
+            alt="Manuscript thumbnail"
             className="w-full h-full object-cover rounded"
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs rounded">
-            <FileText size={32} />
-            <span className="ml-2">No Image</span>
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded">
+            No Image
           </div>
         )}
+      </div>
 
-        {/* Status badge */}
+      {/* Info */}
+      <div className="flex-1">
+        <h3 className="font-semibold text-lg">{manuscript.title}</h3>
+        <p className="text-sm text-gray-600">Author: {manuscript.author?.name}</p>
         <span
-          className={`absolute top-2 right-2 px-2 py-1 text-xs font-bold rounded ${statusStyles[manuscript.status]}`}
+          className={`inline-block mt-2 text-xs px-2 py-1 rounded ${statusStyles[manuscript.status]}`}
         >
           {manuscript.status.replace("_", " ").toUpperCase()}
         </span>
-      </div>
 
-      {/* Manuscript info */}
-      <h3 className="font-semibold text-lg mb-1">{manuscript.title || "Untitled"}</h3>
-      <p className="text-sm text-gray-600 mb-2">
-        Author: {manuscript.author?.name || "Unknown"}
-      </p>
-      <p className="text-xs text-gray-500 mb-3">
-        {manuscript.description || "No description available."}
-      </p>
-
-      {/* Actions */}
-      <div className="flex gap-2">
-        {/* Always available */}
-        <button
-          onClick={handleView}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-        >
-          <Eye size={16} /> Read
-        </button>
-
-        {/* Conditional buttons */}
-        {manuscript.status === "pending" && (
-          <button className="flex-1 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Assign
+        {/* Actions */}
+        <div className="flex gap-2 mt-4">
+          <button
+            onClick={() => onRead(manuscript)}
+            className="px-3 py-1 bg-green-600 text-white rounded flex items-center gap-1"
+          >
+            <Eye size={16} /> Read
           </button>
-        )}
 
-        {manuscript.status === "accepted" && (
-          <button className="flex-1 px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
-            Publish
-          </button>
-        )}
+          {manuscript.status === "pending" && (
+            <button
+              onClick={() => navigate(`/admin/assign-reviewer/${manuscript._id}`)}
+              className="px-3 py-1 bg-blue-600 text-white rounded"
+            >
+              Assign
+            </button>
+          )}
+
+          {manuscript.status === "accepted" && (
+            <button className="px-3 py-1 bg-purple-600 text-white rounded">
+              Publish
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
