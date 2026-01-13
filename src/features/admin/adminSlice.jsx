@@ -1,51 +1,25 @@
-// redux/adminSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import API from "../../api/authApi";
+import API from "../../api/authApi.js";
 
-// Fetch all manuscripts
-export const fetchManuscripts = createAsyncThunk(
-  "admin/fetchManuscripts",
+/**
+ * Fetch all manuscripts (Admin)
+ */
+export const fetchAllManuscripts = createAsyncThunk(
+  "admin/fetchAllManuscripts",
   async (_, { rejectWithValue }) => {
     try {
       const res = await API.get("/admin/manuscripts");
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch manuscripts"
+      );
     }
   }
 );
 
-// Assign reviewer
-export const assignReviewer = createAsyncThunk(
-  "admin/assignReviewer",
-  async ({ manuscriptId, reviewerId }, { rejectWithValue }) => {
-    try {
-      const res = await API.post("/admin/manuscripts/assign-reviewer", {
-        manuscriptId,
-        reviewerId,
-      });
-      return res.data.manuscript;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || err.message);
-    }
-  }
-);
-
-// Toggle publish/unpublish
-export const togglePublish = createAsyncThunk(
-  "admin/togglePublish",
-  async ({ manuscriptId }, { rejectWithValue }) => {
-    try {
-      const res = await API.post("/admin/manuscripts/publish", { manuscriptId });
-      return res.data.manuscript;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || err.message);
-    }
-  }
-);
-
-const adminSlice = createSlice({
-  name: "admin",
+const adminManuscriptsSlice = createSlice({
+  name: "adminManuscripts",
   initialState: {
     manuscripts: [],
     loading: false,
@@ -54,33 +28,19 @@ const adminSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch manuscripts
-      .addCase(fetchManuscripts.pending, (state) => {
+      .addCase(fetchAllManuscripts.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-      .addCase(fetchManuscripts.fulfilled, (state, action) => {
+      .addCase(fetchAllManuscripts.fulfilled, (state, action) => {
         state.loading = false;
         state.manuscripts = action.payload;
       })
-      .addCase(fetchManuscripts.rejected, (state, action) => {
+      .addCase(fetchAllManuscripts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-      // Assign reviewer
-      .addCase(assignReviewer.fulfilled, (state, action) => {
-        const index = state.manuscripts.findIndex(
-          (m) => m._id === action.payload._id
-        );
-        if (index !== -1) state.manuscripts[index] = action.payload;
-      })
-      // Toggle publish
-      .addCase(togglePublish.fulfilled, (state, action) => {
-        const index = state.manuscripts.findIndex(
-          (m) => m._id === action.payload._id
-        );
-        if (index !== -1) state.manuscripts[index] = action.payload;
       });
   },
 });
 
-export default adminSlice.reducer;
+export default adminManuscriptsSlice.reducer;
