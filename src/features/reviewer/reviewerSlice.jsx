@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../api/authApi.js";
 
-// Fetch manuscripts assigned to reviewer
+// 1. Fetch manuscripts assigned to reviewer
 export const fetchAssignedManuscripts = createAsyncThunk(
   "reviewer/fetchAssignedManuscripts",
   async (_, { rejectWithValue }) => {
@@ -15,7 +15,33 @@ export const fetchAssignedManuscripts = createAsyncThunk(
   }
 );
 
-// Start review
+// 2. Download/Open Manuscript File (Fixes "No token provided" error)
+export const downloadManuscriptFile = createAsyncThunk(
+  "reviewer/downloadFile",
+  async ({ manuscriptId, contentType }, { rejectWithValue }) => {
+    try {
+      const response = await API.get(`/reviewer/manuscripts/${manuscriptId}/file`, {
+        responseType: "blob", // Essential for binary data like PDFs
+      });
+
+      // Create a local URL for the downloaded blob
+      const file = new Blob([response.data], { type: contentType || "application/pdf" });
+      const fileURL = URL.createObjectURL(file);
+
+      // Open in a new tab
+      window.open(fileURL, "_blank");
+
+      // Clean up the URL object memory after a short delay
+      setTimeout(() => URL.revokeObjectURL(fileURL), 5000);
+      
+      return manuscriptId;
+    } catch (err) {
+      return rejectWithValue("Failed to open file. You may not have permission.");
+    }
+  }
+);
+
+// 3. Start review (Changes status to 'under_review')
 export const startReview = createAsyncThunk(
   "reviewer/startReview",
   async (manuscriptId, { rejectWithValue }) => {
@@ -28,7 +54,7 @@ export const startReview = createAsyncThunk(
   }
 );
 
-// Submit review
+// 4. Submit review (Changes status to 'accepted' or 'rejected')
 export const submitReview = createAsyncThunk(
   "reviewer/submitReview",
   async ({ manuscriptId, status, reviewerComments }, { rejectWithValue }) => {
@@ -58,6 +84,11 @@ const reviewerSlice = createSlice({
       .addCase(fetchAssignedManuscripts.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(fetchAssignedManuscripts.fulfilled, (state, action) => { state.loading = false; state.manuscripts = action.payload; })
       .addCase(fetchAssignedManuscripts.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+
+      // Download File (Optional: track loading state for the file)
+      .addCase(downloadManuscriptFile.pending, (state) => { state.loading = true; })
+      .addCase(downloadManuscriptFile.fulfilled, (state) => { state.loading = false; })
+      .addCase(downloadManuscriptFile.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
       // Start review
       .addCase(startReview.pending, (state) => { state.loading = true; state.error = null; })

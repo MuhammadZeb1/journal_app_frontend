@@ -34,7 +34,7 @@ const Navbar = () => {
       <div className="border-t">
         {role === "admin" && <AdminNavbar />}
         {role === "author" && <AuthorNavbar />}
-        {role === "reviewer" && <ReviewerNavbar />}
+        {role === "expert" && <ReviewerNavbar />}
       </div>
     </>
   );

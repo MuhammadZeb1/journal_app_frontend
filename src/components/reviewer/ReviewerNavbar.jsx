@@ -11,7 +11,8 @@ const ReviewerNavbar = () => {
           }`
         }
       >
-        Reviewer Dashboard
+        {/* Changed from 'Reviewer Dashboard' to something more descriptive */}
+        Expert Review Panel
       </NavLink>
     </div>
   );

@@ -63,7 +63,7 @@ function App() {
 
         {/* <Route path="/admin-approve" element={<AdminApprove />} /> */}
         {/* reviewer navbar links */}
-        <Route path="/admin/assign-reviewer/:manuscriptId" element={<AssignReviewerPage />} />
+        {/* <Route path="/admin/assign-reviewer/:manuscriptId" element={<AssignReviewerPage />} /> */}
         <Route path="/reviewer/dashboard" element={<ReviewerDashboard />} />
 
         </Routes>
