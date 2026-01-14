@@ -1,61 +1,120 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import { LayoutGrid, FileSearch, AlertCircle, Loader2 } from "lucide-react";
+import { Filter as FilterIcon, Loader2, BookOpen } from "lucide-react";
 import AdminManuscriptCard from "../../components/admin/AdminManuscriptCard.jsx";
+import AdminFilterSidebar from "../../components/admin/AdminFilterSidebar.jsx"; // Import new sidebar
 import { fetchAllManuscripts } from "../../features/admin/adminSlice.jsx";
-import API from "../../api/authApi.js"; // Import your API instance
+import API from "../../api/authApi.js";
 
 const AdminManuscripts = () => {
   const dispatch = useDispatch();
   const { manuscripts, loading, error } = useSelector((state) => state.adminManuscripts);
 
+  // States for Filtering
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   useEffect(() => {
     dispatch(fetchAllManuscripts());
   }, [dispatch]);
 
+  // Filtering Logic
+  const filteredManuscripts = manuscripts.filter((m) => {
+    const matchesSearch = m.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "All" || m.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   const handleRead = async (manuscript) => {
-    const toastId = toast.loading(`Preparing ${manuscript.title}...`);
+    const toastId = toast.loading(`Opening ${manuscript.title}...`);
     try {
-      // 1. Fetch file as binary data (Blob)
       const response = await API.get(`/admin/manuscripts/${manuscript._id}/file`, {
         responseType: 'blob',
       });
-
-      // 2. Create a temporary local URL for the file
-      const blob = new Blob([response.data], { type: manuscript.contentType || 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-
-      // 3. Open in new tab
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       window.open(url, "_blank");
-
-      toast.update(toastId, { render: "File opened!", type: "success", isLoading: false, autoClose: 2000 });
-      
-      // Cleanup the URL object later to save memory
-      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      toast.update(toastId, { render: "Document loaded", type: "success", isLoading: false, autoClose: 2000 });
     } catch (err) {
-      toast.update(toastId, { render: "Failed to load file", type: "error", isLoading: false, autoClose: 3000 });
+      toast.update(toastId, { render: "Failed to open file", type: "error", isLoading: false, autoClose: 3000 });
     }
   };
 
-  // ... (Keep your existing Loading and Error UI)
+  if (loading && manuscripts.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-slate-500">
+        <Loader2 className="animate-spin mb-4" size={40} />
+        <p className="font-medium">Loading editorial database...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 md:p-10 bg-[#FDFDFD] min-h-screen">
-      {/* ... Header UI ... */}
+    <div className="min-h-screen bg-[#FDFDFD] flex relative">
       
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
-      >
-        {manuscripts.map((m, index) => (
-          <motion.div key={m._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-            <AdminManuscriptCard manuscript={m} onRead={handleRead} />
-          </motion.div>
-        ))}
-      </motion.div>
+      {/* 1. ADMIN FILTER SIDEBAR */}
+      <AdminFilterSidebar 
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+      />
+
+      {/* 2. MAIN CONTENT */}
+      <main className="flex-1 p-6 lg:p-10">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Header */}
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="lg:hidden p-3 bg-white border border-slate-200 rounded-2xl text-slate-600"
+              >
+                <FilterIcon size={20} />
+              </button>
+              <div>
+                <h2 className="text-3xl font-serif font-bold text-slate-900">Editorial Overview</h2>
+                <p className="text-slate-400 text-sm font-medium mt-1">
+                  Managing {filteredManuscripts.length} submissions in the pipeline
+                </p>
+              </div>
+            </div>
+            
+            <div className="hidden md:flex bg-indigo-50 px-4 py-2 rounded-xl items-center gap-2 text-indigo-600 font-bold text-xs uppercase">
+              <BookOpen size={16} /> Admin Portal
+            </div>
+          </div>
+
+          {/* Manuscript Grid */}
+          <div className="grid gap-6 md:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3">
+            <AnimatePresence mode="popLayout">
+              {filteredManuscripts.length > 0 ? (
+                filteredManuscripts.map((m, index) => (
+                  <motion.div 
+                    layout
+                    key={m._id} 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: index * 0.03 }}
+                  >
+                    <AdminManuscriptCard manuscript={m} onRead={handleRead} />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full py-20 text-center bg-white border-2 border-dashed border-slate-100 rounded-[2.5rem]">
+                   <p className="text-slate-400 italic">No manuscripts found matching these filters.</p>
+                </div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
