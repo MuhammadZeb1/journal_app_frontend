@@ -28,6 +28,7 @@ import ReviewerNavbar from "./components/reviewer/ReviewerNavbar.jsx";
 // import AutherDashboard from "./pages/author/AuthorDashboard.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AdminApprovePage from "./pages/admin/AdminApprovePage.jsx";
 
 function App() {
   return (
@@ -57,10 +58,10 @@ function App() {
 
 
         {/* admin navbar links */}
-        <Route path="/admin-paper-approve" element={<AdminPaperApprove />} />
-        <Route path="/admin-approve" element={<AdminApprove />} />
         <Route path="/admin/manuscripts" element={<AdminManuscripts />} />
+        <Route path="/approve-request" element={<AdminApprovePage />} />
 
+        {/* <Route path="/admin-approve" element={<AdminApprove />} /> */}
         {/* reviewer navbar links */}
         <Route path="/admin/assign-reviewer/:manuscriptId" element={<AssignReviewerPage />} />
         <Route path="/reviewer/dashboard" element={<ReviewerDashboard />} />

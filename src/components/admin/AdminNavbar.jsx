@@ -1,13 +1,15 @@
 import { NavLink } from "react-router-dom";
 
 const AdminNavbar = () => {
+  // Updated admin links
+  const adminLinks = [
+    { to: "/admin/manuscripts", label: "Manuscripts Management" },
+    { to: "/approve-request", label: "Author request" },
+  ];
+
   return (
     <div className="bg-slate-900 px-8 py-2.5 flex justify-center gap-8 shadow-inner">
-      {[
-        { to: "/admin/manuscripts", label: "Manuscripts Management" },
-        { to: "/admin-paper-approve", label: "Paper Approvals" },
-        { to: "/admin-approve", label: "Manage Authors" },
-      ].map((link) => (
+      {adminLinks.map((link) => (
         <NavLink
           key={link.to}
           to={link.to}
