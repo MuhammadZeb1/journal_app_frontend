@@ -26,15 +26,16 @@ import AuthorNavbar from "./components/author/AuthorNavbar.jsx";
 import ReviewerNavbar from "./components/reviewer/ReviewerNavbar.jsx";
 // import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 // import AutherDashboard from "./pages/author/AuthorDashboard.jsx";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <>
+<ToastContainer position="top-right" autoClose={3000} theme="colored" />
       
-          {/* <Navbar/> */}
-          {/* <AdminNavbar/> */}
-          {/* <AuthorNavbar/> */}
-          {/* <ReviewerNavbar/> */}
+          <Navbar/>
+      
         <Routes>
           {/* for any one ok  */}
         <Route path="/" element={<Home />} />
