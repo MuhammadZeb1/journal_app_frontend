@@ -14,9 +14,13 @@ export default function Login() {
     e.preventDefault();
     dispatch(loginUser(form)).then((res) => {
       if (!res.error) {
+        // ✅ Extract token and user from response payload
         const token = res.payload.token;
+       
         localStorage.setItem("token", token);
-        navigate("/");
+        // Save role for Navbar
+
+        navigate("/"); // redirect after login
       }
     });
   };
@@ -32,8 +36,8 @@ export default function Login() {
             Sign in to continue your research journey.
           </p>
           <div className="flex gap-4">
-             <div className="badge badge-outline p-4">Peer Reviewed</div>
-             <div className="badge badge-outline p-4">Open Access</div>
+            <div className="badge badge-outline p-4">Peer Reviewed</div>
+            <div className="badge badge-outline p-4">Open Access</div>
           </div>
         </div>
       </div>

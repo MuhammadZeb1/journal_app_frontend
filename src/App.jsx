@@ -22,6 +22,8 @@ import EditorialTeam from "./pages/EditorialTeam.jsx";
 import EditorialPolicies from "./pages/EditorialPolicies.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
 import AdminNavbar from "./components/admin/AdminNavbar.jsx";
+import AuthorNavbar from "./components/author/AuthorNavbar.jsx";
+import ReviewerNavbar from "./components/reviewer/ReviewerNavbar.jsx";
 // import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 // import AutherDashboard from "./pages/author/AuthorDashboard.jsx";
 
@@ -29,8 +31,10 @@ function App() {
   return (
     <>
       
-          <Navbar/>
+          {/* <Navbar/> */}
           {/* <AdminNavbar/> */}
+          {/* <AuthorNavbar/> */}
+          {/* <ReviewerNavbar/> */}
         <Routes>
           {/* for any one ok  */}
         <Route path="/" element={<Home />} />

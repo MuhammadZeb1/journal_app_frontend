@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, LogOut, User, BookOpen } from "lucide-react";
 
 const PublicNavbar = () => {
   const [open, setOpen] = useState(false);
@@ -13,118 +14,89 @@ const PublicNavbar = () => {
     navigate("/login");
   };
 
-  return (
-    <nav className="w-full bg-white shadow-md px-8 py-4 flex items-center">
+  const navLinkStyle = ({ isActive }) =>
+    `px-4 py-2 text-sm font-medium transition-colors ${
+      isActive ? "text-indigo-600" : "text-slate-600 hover:text-indigo-600"
+    }`;
 
+  return (
+    <nav className="w-full bg-white border-b border-slate-100 px-8 py-5 flex items-center sticky top-0 z-[100]">
       {/* LEFT → LOGO */}
       <div className="w-1/4">
-        <Link
-          to="/"
-          className="text-2xl font-semibold tracking-wide text-blue-600"
-        >
-          JournalSys
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="bg-indigo-600 p-1.5 rounded-lg shadow-indigo-200 shadow-lg">
+            <BookOpen size={20} className="text-white" />
+          </div>
+          <span className="text-xl font-serif font-bold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors uppercase">
+            JournalSys
+          </span>
         </Link>
       </div>
 
-      {/* CENTER → PUBLIC (ANYONE) */}
-      <div className="w-2/4 flex justify-center">
+      {/* CENTER → NAVIGATION */}
+      <div className="w-2/4 flex justify-center items-center gap-4">
+        <NavLink to="/" className={navLinkStyle}>Home</NavLink>
+        
         <div
           className="relative"
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
         >
-          <button className="font-medium text-gray-700 hover:text-blue-600 transition">
-            Information ▾
+          <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">
+            Information <ChevronDown size={14} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
           </button>
 
           <AnimatePresence>
             {open && (
               <motion.div
-                initial={{ opacity: 0, y: -8 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2 }}
-                className="absolute top-8 left-1/2 -translate-x-1/2
-                           bg-white shadow-lg rounded-lg w-64 z-50"
+                exit={{ opacity: 0, y: 10 }}
+                className="absolute top-full left-1/2 -translate-x-1/2 w-56 bg-white shadow-xl rounded-xl border border-slate-100 py-2 mt-1 overflow-hidden"
               >
-                
-
-                <NavLink
-                  to="/about"
-                  className="block px-5 py-2 hover:bg-gray-100"
-                >
-                  About Us
-                </NavLink>
-
-                <NavLink
-                  to="/contact"
-                  className="block px-5 py-2 hover:bg-gray-100"
-                >
-                  Contact
-                </NavLink>
-
-                <NavLink
-                  to="/editorial-team"
-                  className="block px-5 py-2 hover:bg-gray-100"
-                >
-                  Editorial Team
-                </NavLink>
-
-                <NavLink
-                  to="/editorial-policies"
-                  className="block px-5 py-2 hover:bg-gray-100"
-                >
-                  Editorial Policies
-                </NavLink>
+                {[
+                  { to: "/about", label: "About Us" },
+                  { to: "/editorial-team", label: "Editorial Team" },
+                  { to: "/editorial-policies", label: "Editorial Policies" },
+                  { to: "/contact", label: "Contact Us" },
+                ].map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    className="block px-5 py-2.5 text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      {/* RIGHT → AUTH BUTTONS */}
-      <div className="w-1/4 flex justify-end gap-3">
+      {/* RIGHT → AUTH */}
+      <div className="w-1/4 flex justify-end gap-3 items-center">
         {!token ? (
           <>
-          <NavLink
-                  to="/"
-                  className="block px-5 py-2 hover:bg-gray-100"
-                >
-                  Home
-                </NavLink>
-            <NavLink
-              to="/login"
-              className="px-4 py-2 border rounded-lg hover:bg-gray-100 transition"
-            >
+            <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors px-4">
               Login
-            </NavLink>
-
-            <NavLink
+            </Link>
+            <Link
               to="/register"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-full hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all active:scale-95"
             >
               Register
-            </NavLink>
+            </Link>
           </>
         ) : (
-            
-          <>
-          <NavLink
-                  to="/"
-                  className="block px-5 py-2 hover:bg-gray-100"
-                >
-                  Home
-                </NavLink>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            className="flex items-center gap-2 px-5 py-2.5 bg-rose-50 text-rose-600 text-sm font-bold rounded-full hover:bg-rose-100 transition-all active:scale-95"
           >
-            Logout
+            <LogOut size={16} /> Logout
           </button>
-          </>
         )}
       </div>
-
     </nav>
   );
 };
