@@ -16,7 +16,7 @@ export default function Login() {
       if (!res.error) {
         const token = res.payload.token;
         localStorage.setItem("token", token);
-        navigate("/dashboard");
+        navigate("/");
       }
     });
   };

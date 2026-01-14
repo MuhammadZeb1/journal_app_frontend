@@ -17,6 +17,11 @@ import EditManuscript from "./pages/author/EditManuscript.jsx";
 import AdminManuscripts from "./pages/admin/AdminManuscripts.jsx";
 import AssignReviewerPage from "./components/admin/AssignReviewerPage.jsx";
 import ReviewerDashboard from "./pages/reviewer/ReviewerDashboard.jsx";
+import Contact from "./pages/Contact.jsx";
+import EditorialTeam from "./pages/EditorialTeam.jsx";
+import EditorialPolicies from "./pages/EditorialPolicies.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import AdminNavbar from "./components/admin/AdminNavbar.jsx";
 // import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 // import AutherDashboard from "./pages/author/AuthorDashboard.jsx";
 
@@ -25,19 +30,33 @@ function App() {
     <>
       
           <Navbar/>
+          {/* <AdminNavbar/> */}
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* for any one ok  */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/request-expert" element={<AuthorRequestPage />} />
-        <Route path="/admin-approve" element={<AdminApprove />} />
+             {/* use the one button for that on hover show the dreopdown menu for (contact, about, editorial team, editorial policies) */}
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<AboutUs />} /> 
+        <Route path="/editorial-policies" element={<EditorialPolicies />} />
+        <Route path="/editorial-team" element={<EditorialTeam />} />
+
         <Route path="/login-success" element={<LoginSuccess />} />
-        <Route path="/admin-paper-approve" element={<AdminPaperApprove />} />
+
+        {/* author navbar links */}
+        <Route path="/request-expert" element={<AuthorRequestPage />} />
         <Route path="/upload-manuscript" element={<UploadManuscript />} />
         <Route path="/my-manuscripts" element={<MyManuscripts />} />
         <Route path="/author/edit/:id" element={<EditManuscript />} />
 
+
+        {/* admin navbar links */}
+        <Route path="/admin-paper-approve" element={<AdminPaperApprove />} />
+        <Route path="/admin-approve" element={<AdminApprove />} />
         <Route path="/admin/manuscripts" element={<AdminManuscripts />} />
+
+        {/* reviewer navbar links */}
         <Route path="/admin/assign-reviewer/:manuscriptId" element={<AssignReviewerPage />} />
         <Route path="/reviewer/dashboard" element={<ReviewerDashboard />} />
 

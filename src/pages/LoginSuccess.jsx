@@ -16,7 +16,7 @@ export default function LoginSuccess() {
       console.log("✅ Google Login Token:", token);
 
       // ✅ Redirect
-      navigate("/dashboard");
+      navigate("/");
     }
   }, []);
 
