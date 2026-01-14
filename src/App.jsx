@@ -29,6 +29,7 @@ import ReviewerNavbar from "./components/reviewer/ReviewerNavbar.jsx";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminApprovePage from "./pages/admin/AdminApprovePage.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
         {/* <Route path="/admin-approve" element={<AdminApprove />} /> */}
         {/* reviewer navbar links */}
         <Route path="/reviewer/dashboard" element={<ReviewerDashboard />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         </Routes>
       
