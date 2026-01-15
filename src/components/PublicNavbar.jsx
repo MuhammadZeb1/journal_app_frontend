@@ -37,6 +37,7 @@ const PublicNavbar = () => {
       {/* CENTER → NAVIGATION */}
       <div className="w-2/4 flex justify-center items-center gap-4">
         <NavLink to="/" className={navLinkStyle}>Home</NavLink>
+        <NavLink to="/published" className={navLinkStyle}>Published</NavLink>
         
         <div
           className="relative"

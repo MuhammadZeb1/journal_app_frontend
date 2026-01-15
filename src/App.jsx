@@ -30,6 +30,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminApprovePage from "./pages/admin/AdminApprovePage.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
+import PublishedManuscripts from "./pages/PublishedManuscripts.jsx";
 
 function App() {
   return (
@@ -68,6 +69,8 @@ function App() {
         <Route path="/reviewer/dashboard" element={<ReviewerDashboard />} />
            {/* for other purpse */}
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/published" element={<PublishedManuscripts />} />
+
         </Routes>
       
     </>
