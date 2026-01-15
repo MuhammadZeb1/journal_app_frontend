@@ -44,7 +44,7 @@ const PublicNavbar = () => {
           onMouseLeave={() => setOpen(false)}
         >
           <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">
-            Information <ChevronDown size={14} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+            About The Journal <ChevronDown size={14} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
           </button>
 
           <AnimatePresence>
