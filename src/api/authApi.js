@@ -1,8 +1,14 @@
 import axios from "axios";
- // Redux store
 
+// Decide baseURL depending on environment
+const baseURL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000/api" // Local development
+    : "https://journal-app-backend-smoky.vercel.app/"; // Production (Vercel)
+
+// Create Axios instance
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // backend
+  baseURL,
 });
 
 // Automatically attach token if exists
