@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Headset, UserCheck, Send } from "lucide-react";
+import QuickInquiryForm from "../components/QuickInquiryForm";
 
 // Animation Variants
 const fadeInUp = {
@@ -133,7 +134,7 @@ export default function Contact() {
         </div>
 
         {/* QUICK MESSAGE FORM (Optional Add-on) */}
-        <motion.section 
+        {/* <motion.section 
           className="mt-24 max-w-4xl mx-auto"
           initial="initial"
           whileInView="animate"
@@ -156,7 +157,8 @@ export default function Contact() {
               </div>
             </form>
           </div>
-        </motion.section>
+        </motion.section> */}
+        <QuickInquiryForm/>
 
       </main>
 

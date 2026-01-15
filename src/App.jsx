@@ -66,8 +66,8 @@ function App() {
         {/* <Route path="/admin-approve" element={<AdminApprove />} /> */}
         {/* reviewer navbar links */}
         <Route path="/reviewer/dashboard" element={<ReviewerDashboard />} />
+           {/* for other purpse */}
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-
         </Routes>
       
     </>

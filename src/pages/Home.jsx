@@ -32,7 +32,7 @@ export default function Home() {
             <motion.img 
               src={logoNav} 
               alt="Logo" 
-              className="h-60 mx-auto mb-12 opacity-90"
+              className="h-20 mx-auto mb-12 opacity-90"
               variants={fadeInUp}
             />
 

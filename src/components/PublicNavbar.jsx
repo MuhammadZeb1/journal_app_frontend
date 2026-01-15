@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, LogOut, User, BookOpen } from "lucide-react";
+import imagLogo from "../assets/Logo_psychological Journal_with text (1).png";
 
 const PublicNavbar = () => {
   const [open, setOpen] = useState(false);
@@ -24,11 +25,11 @@ const PublicNavbar = () => {
       {/* LEFT → LOGO */}
       <div className="w-1/4">
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="bg-indigo-600 p-1.5 rounded-lg shadow-indigo-200 shadow-lg">
-            <BookOpen size={20} className="text-white" />
-          </div>
+          
           <span className="text-xl font-serif font-bold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors uppercase">
-            JournalSys
+            <img src={imagLogo} alt=""
+            className="h-12 w-auto"
+            />
           </span>
         </Link>
       </div>
