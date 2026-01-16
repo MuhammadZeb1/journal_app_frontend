@@ -1,10 +1,10 @@
 import axios from "axios";
 
 // Decide baseURL depending on environment
-const baseURL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000/api" // Local development
-    : "https://journal-app-backend-smoky.vercel.app/"; // Production (Vercel)
+const baseURL = "http://localhost:5000/api";
+  // window.location.hostname === "localhost"
+  //   ? "http://localhost:5000/api" // Local development
+  //   : "https://journal-app-backend-smoky.vercel.app/"; // Production (Vercel)
 
 // Create Axios instance
 const API = axios.create({

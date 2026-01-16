@@ -58,9 +58,12 @@ export default function Contact() {
                   <Phone size={18} />
                   <span>+7 (495) 683-58-10</span>
                 </a>
-                <a href="mailto:associateeditor@psychologicaljournal.org" className="flex items-center gap-3 text-slate-600 hover:text-primary transition-colors">
+                <a href="mailto:zhuravlev@psychologicaljournal.org" className="flex items-center gap-3 text-slate-600 hover:text-primary transition-colors">
                   <Mail size={18} />
-                  <span className="break-all">associateeditor@psychologicaljournal.org</span>
+                  <span className="break-all">
+                    {/* associateeditor@psychologicaljournal.org */}
+                    zhuravlev@psychologicaljournal.org
+                    </span>
                 </a>
               </div>
             </div>
@@ -119,10 +122,13 @@ export default function Contact() {
                 <p className="text-sm uppercase tracking-widest text-slate-400 mb-1">Technical Issues</p>
                 <p className="font-bold text-lg">RCSI Journals' Platform Support</p>
               </div>
+          
 
-              <a href="mailto:zhuravlev@psychologicaljournal.org" className="flex items-center gap-3 text-slate-300 hover:text-primary transition-colors pt-4 border-t border-slate-800">
+              <a href="mailto:associateeditor@psychologicaljournal.org" className="flex items-center gap-3 text-slate-300  transition-colors pt-4 border-t border-slate-800">
                 <Mail size={18} />
-                <span className="break-all text-sm">zhuravlev@psychologicaljournal.org</span>
+                <span className="break-all text-sm">
+                  associateeditor@psychologicaljournal.org
+                  </span>
               </a>
 
               <div className="mt-8 p-4 bg-slate-800 rounded-lg text-xs text-slate-400 leading-relaxed">

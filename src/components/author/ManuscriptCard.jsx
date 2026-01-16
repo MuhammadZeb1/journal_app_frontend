@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 import {
-  FileText,
   Eye,
   Edit3,
   Trash2,
@@ -9,8 +8,9 @@ import {
   MessageSquare,
   X,
   User,
-  BookOpenCheck
-} from 'lucide-react';
+  BookOpenCheck,
+} from "lucide-react";
+import ConfirmModal from "../ConfirmModal"; // 🔴 adjust path if needed
 
 const statusStyles = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -23,20 +23,24 @@ const statusStyles = {
 
 const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
   const [showReview, setShowReview] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleViewFile = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(
         `http://localhost:5000/api/author/manuscripts/${manuscript._id}/file`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          responseType: 'blob',
+          responseType: "blob",
         }
       );
-      const file = new Blob([response.data], { type: manuscript.contentType });
+
+      const file = new Blob([response.data], {
+        type: manuscript.contentType,
+      });
       const fileURL = URL.createObjectURL(file);
-      window.open(fileURL, '_blank');
+      window.open(fileURL, "_blank");
       setTimeout(() => URL.revokeObjectURL(fileURL), 5000);
     } catch (error) {
       console.error("Error opening file:", error);
@@ -45,7 +49,7 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
 
   return (
     <>
-      {/* ===== ADMIN CARD STYLE START ===== */}
+      {/* ===== MANUSCRIPT CARD ===== */}
       <div className="group relative flex flex-col sm:flex-row gap-5 p-5 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300">
         
         {/* Thumbnail */}
@@ -65,9 +69,7 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
           {/* Status */}
           <div className="absolute top-2 left-2">
             <span
-              className={`text-[10px] font-bold px-2 py-1 rounded-md border shadow-sm uppercase ${
-                statusStyles[manuscript.status]
-              }`}
+              className={`text-[10px] font-bold px-2 py-1 rounded-md border uppercase ${statusStyles[manuscript.status]}`}
             >
               {manuscript.status.replace("_", " ")}
             </span>
@@ -122,7 +124,7 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
                 </button>
 
                 <button
-                  onClick={() => onDelete(manuscript._id)}
+                  onClick={() => setShowDeleteModal(true)}
                   className="px-3 py-2 bg-white text-rose-500 border border-slate-200 rounded-lg hover:bg-rose-50"
                 >
                   <Trash2 size={14} />
@@ -132,9 +134,8 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
           </div>
         </div>
       </div>
-      {/* ===== ADMIN CARD STYLE END ===== */}
 
-      {/* ===== REVIEW MODAL (UNCHANGED) ===== */}
+      {/* ===== REVIEW MODAL ===== */}
       {showReview && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
           <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
@@ -153,6 +154,19 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
           </div>
         </div>
       )}
+
+      {/* ===== DELETE CONFIRM MODAL (COMMON) ===== */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Delete Manuscript?"
+        message="Are you sure you want to delete this manuscript? This action cannot be undone."
+        confirmText="Yes, Delete"
+        onConfirm={() => {
+          onDelete(manuscript._id);
+          setShowDeleteModal(false);
+        }}
+      />
     </>
   );
 };

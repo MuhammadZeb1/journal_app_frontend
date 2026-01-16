@@ -1,11 +1,12 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, LogOut, User, BookOpen } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X } from "lucide-react";
 import imagLogo from "../assets/Logo_psychological Journal_with text (1).png";
 
 const PublicNavbar = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // dropdown
+  const [mobileOpen, setMobileOpen] = useState(false); // hamburger
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -21,84 +22,144 @@ const PublicNavbar = () => {
     }`;
 
   return (
-    <nav className="w-full bg-white border-b border-slate-100 px-8 py-5 flex items-center sticky top-0 z-[100]">
-      {/* LEFT → LOGO */}
-      <div className="w-1/4">
-        <Link to="/" className="flex items-center gap-2 group">
-          
-          <span className="text-xl font-serif font-bold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors uppercase">
-            <img src={imagLogo} alt=""
-            className="h-12 w-auto"
-            />
-          </span>
-        </Link>
+    <nav className="w-full bg-white border-b border-slate-100 px-8 py-5 sticky top-0 z-[100]">
+      
+      {/* MAIN ROW (UNCHANGED) */}
+      <div className="flex items-center">
+        
+        {/* LEFT → LOGO */}
+        <div className="w-1/4">
+          <Link to="/" className="flex items-center gap-2 group">
+            <img src={imagLogo} alt="" className="h-12 w-auto" />
+          </Link>
+        </div>
+
+        {/* CENTER → NAVIGATION (DESKTOP ONLY) */}
+        <div className="w-2/4 hidden md:flex justify-center items-center gap-4">
+          <NavLink to="/" className={navLinkStyle}>Home</NavLink>
+          <NavLink to="/published" className={navLinkStyle}>Published</NavLink>
+
+          <div
+            className="relative"
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+          >
+            <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-600 hover:text-indigo-600">
+              About The Journal
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${open ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute top-full left-1/2 -translate-x-1/2 w-56 bg-white shadow-xl rounded-xl border py-2 mt-1"
+                >
+                  {[
+                    { to: "/about", label: "About Us" },
+                    { to: "/editorial-team", label: "Editorial Team" },
+                    { to: "/editorial-policies", label: "Editorial Policies" },
+                    { to: "/contact", label: "Contact Us" },
+                  ].map(link => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      className="block px-5 py-2.5 text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-700"
+                    >
+                      {link.label}
+                    </NavLink>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* RIGHT → AUTH (DESKTOP ONLY) */}
+        <div className="w-1/4 hidden md:flex justify-end gap-3 items-center">
+          {!token ? (
+            <>
+              <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 px-4">
+                Login
+              </Link>
+              <Link to="/register" className="px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-full">
+                Register
+              </Link>
+            </>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-2.5 bg-rose-50 text-rose-600 text-sm font-bold rounded-full"
+            >
+              <LogOut size={16} /> Logout
+            </button>
+          )}
+        </div>
+
+        {/* HAMBURGER (MOBILE ONLY) */}
+        <div className="md:hidden ml-auto">
+          <button onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
+        </div>
       </div>
 
-      {/* CENTER → NAVIGATION */}
-      <div className="w-2/4 flex justify-center items-center gap-4">
-        <NavLink to="/" className={navLinkStyle}>Home</NavLink>
-        <NavLink to="/published" className={navLinkStyle}>Published</NavLink>
-        
-        <div
-          className="relative"
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-        >
-          <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">
-            About The Journal <ChevronDown size={14} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
-          </button>
+      {/* MOBILE MENU (SAME CONTENT, STACKED) */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden mt-4 border-t pt-4 space-y-2"
+          >
+            <NavLink to="/" className={navLinkStyle}>Home</NavLink>
+            <NavLink to="/published" className={navLinkStyle}>Published</NavLink>
 
-          <AnimatePresence>
+            <button
+              onClick={() => setOpen(!open)}
+              className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-600"
+            >
+              About The Journal
+              <ChevronDown size={14} className={`${open ? "rotate-180" : ""}`} />
+            </button>
+
             {open && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="absolute top-full left-1/2 -translate-x-1/2 w-56 bg-white shadow-xl rounded-xl border border-slate-100 py-2 mt-1 overflow-hidden"
-              >
+              <div className="pl-4">
                 {[
                   { to: "/about", label: "About Us" },
                   { to: "/editorial-team", label: "Editorial Team" },
                   { to: "/editorial-policies", label: "Editorial Policies" },
                   { to: "/contact", label: "Contact Us" },
-                ].map((link) => (
-                  <NavLink
-                    key={link.to}
-                    to={link.to}
-                    className="block px-5 py-2.5 text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
-                  >
+                ].map(link => (
+                  <NavLink key={link.to} to={link.to} className={navLinkStyle}>
                     {link.label}
                   </NavLink>
                 ))}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-        </div>
-      </div>
 
-      {/* RIGHT → AUTH */}
-      <div className="w-1/4 flex justify-end gap-3 items-center">
-        {!token ? (
-          <>
-            <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors px-4">
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-full hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all active:scale-95"
-            >
-              Register
-            </Link>
-          </>
-        ) : (
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-5 py-2.5 bg-rose-50 text-rose-600 text-sm font-bold rounded-full hover:bg-rose-100 transition-all active:scale-95"
-          >
-            <LogOut size={16} /> Logout
-          </button>
+            {!token ? (
+              <>
+                <NavLink to="/login" className={navLinkStyle}>Login</NavLink>
+                <NavLink to="/register" className={navLinkStyle}>Register</NavLink>
+              </>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-rose-600 text-sm font-bold"
+              >
+                Logout
+              </button>
+            )}
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </nav>
   );
 };

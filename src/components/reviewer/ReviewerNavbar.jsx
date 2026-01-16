@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 const ReviewerNavbar = () => {
   return (
-    <div className="bg-indigo-900 px-8 py-2.5 flex justify-center border-b border-indigo-800">
+    <div className="bg-slate-400 px-8 py-2.5 flex justify-end border-b">
       <NavLink
         to="/reviewer/dashboard"
         className={({ isActive }) =>

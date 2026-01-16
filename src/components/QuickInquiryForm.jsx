@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
+import toast from "daisyui/components/toast";
 
 export default function QuickInquiryForm() {
   const [form, setForm] = useState({
@@ -26,10 +27,10 @@ export default function QuickInquiryForm() {
       });
 
       const data = await res.json();
-      alert(data.message); // show success message
+      toast.success(data.message); // show success message
       setForm({ name: "", message: "", email: "zebafridiuu@gmail.com" }); // reset form
     } catch (err) {
-      alert("Failed to send inquiry");
+      toast.error(err.message);
       console.error(err);
     }
 
