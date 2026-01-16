@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Decide baseURL depending on environment
-const baseURL = "https://journal-app-backend-smoky.vercel.app";
+const baseURL = "https://journal-app-backend-smoky.vercel.app/api";
   // window.location.hostname === "localhost"
   //   ? "http://localhost:5000/api" // Local development
   //   : "https://journal-app-backend-smoky.vercel.app/"; // Production (Vercel)
