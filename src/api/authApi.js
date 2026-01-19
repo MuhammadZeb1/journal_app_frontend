@@ -1,17 +1,14 @@
 import axios from "axios";
 
-// Decide baseURL depending on environment
-const baseURL = "https://journal-app-backend-smoky.vercel.app/api";
-  // window.location.hostname === "localhost"
-  //   ? "http://localhost:5000/api" // Local development
-  //   : "https://journal-app-backend-smoky.vercel.app/"; // Production (Vercel)
+// This detects if you are working on your computer or if the site is live
+const baseURL = window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "https://journal-app-backend-smoky.vercel.app/api"; // Added /api to match your backend routes
 
-// Create Axios instance
 const API = axios.create({
   baseURL,
 });
 
-// Automatically attach token if exists
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;

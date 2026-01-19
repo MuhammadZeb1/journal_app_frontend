@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+// 1. IMPORT YOUR API INSTANCE INSTEAD OF AXIOS
+import API from "../../api/authApi.js"; 
 import {
   Eye,
   Edit3,
@@ -10,7 +11,7 @@ import {
   User,
   BookOpenCheck,
 } from "lucide-react";
-import ConfirmModal from "../ConfirmModal"; // 🔴 adjust path if needed
+import ConfirmModal from "../ConfirmModal";
 
 const statusStyles = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -24,53 +25,79 @@ const statusStyles = {
 const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
   const [showReview, setShowReview] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  // 2. UPDATED FILE VIEW LOGIC
+  //  const handleViewFile = async () => {
+  //   try {
+  //     // 1. Get the signed URL from the Vercel backend
+  //     // const response = await API.get(`/author/manuscripts/${manuscript._id}/file`);
+  //     console.log("response ",response)
+      
+  //     const { downloadUrl } = response.data;
+  //     console.log("download ",downloadUrl)
+
+  //     if (downloadUrl) {
+  //       // 2. Open directly in a new tab. 
+  //       // This lets the browser handle the download stream natively, 
+  //       // which fixes the "d7eatm... (1)" filename corruption.
+  //       window.open(downloadUrl, "_blank");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error opening file:", error);
+  //     alert("Could not open file. Check your internet or login status.");
+  //   }
+  // };
 
   const handleViewFile = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:5000/api/author/manuscripts/${manuscript._id}/file`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob",
-        }
-      );
+  try {
+    setIsDownloading(true);
 
-      const file = new Blob([response.data], {
-        type: manuscript.contentType,
-      });
-      const fileURL = URL.createObjectURL(file);
-      window.open(fileURL, "_blank");
-      setTimeout(() => URL.revokeObjectURL(fileURL), 5000);
-    } catch (error) {
-      console.error("Error opening file:", error);
-    }
-  };
+    const response = await API.get(
+      `/author/manuscripts/${manuscript._id}/download`,
+      {
+        responseType: "blob", // 🔥 IMPORTANT
+      }
+    );
+
+
+    console.log("res",response)
+    // ✅ Create downloadable file
+    const blob = new Blob([response.data]);
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = manuscript.filename; // ✅ correct name
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Download error:", error);
+    alert("File download failed");
+  } finally {
+    setIsDownloading(false);
+  }
+};
+
 
   return (
     <>
-      {/* ===== MANUSCRIPT CARD ===== */}
       <div className="group relative flex flex-col sm:flex-row gap-5 p-5 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300">
         
         {/* Thumbnail */}
         <div className="w-full sm:w-32 h-44 flex-shrink-0 relative overflow-hidden rounded-xl bg-slate-100 shadow-inner">
           {manuscript.imageUrl ? (
-            <img
-              src={manuscript.imageUrl}
-              alt="Cover"
-              className="w-full h-full object-cover"
-            />
+            <img src={manuscript.imageUrl} alt="Cover" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-slate-400">
               <BookOpenCheck size={32} strokeWidth={1.5} />
             </div>
           )}
-
-          {/* Status */}
           <div className="absolute top-2 left-2">
-            <span
-              className={`text-[10px] font-bold px-2 py-1 rounded-md border uppercase ${statusStyles[manuscript.status]}`}
-            >
+            <span className={`text-[10px] font-bold px-2 py-1 rounded-md border uppercase ${statusStyles[manuscript.status]}`}>
               {manuscript.status.replace("_", " ")}
             </span>
           </div>
@@ -82,16 +109,12 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
             <h3 className="font-serif text-lg leading-tight text-slate-900 group-hover:text-indigo-600 line-clamp-2">
               {manuscript.title}
             </h3>
-
             <div className="mt-3 space-y-1.5 text-xs text-slate-500">
               <div className="flex items-center gap-2">
-                <User size={14} className="text-indigo-500" />
-                Author
+                <User size={14} className="text-indigo-500" /> Author
               </div>
-
               <div className="flex items-center gap-2">
-                <Calendar size={14} />
-                {new Date(manuscript.createdAt).toLocaleDateString()}
+                <Calendar size={14} /> {new Date(manuscript.createdAt).toLocaleDateString()}
               </div>
             </div>
           </div>
@@ -122,7 +145,6 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
                 >
                   <Edit3 size={14} />
                 </button>
-
                 <button
                   onClick={() => setShowDeleteModal(true)}
                   className="px-3 py-2 bg-white text-rose-500 border border-slate-200 rounded-lg hover:bg-rose-50"
@@ -135,18 +157,15 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
         </div>
       </div>
 
-      {/* ===== REVIEW MODAL ===== */}
+      {/* Review Modal */}
       {showReview && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
           <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
             <div className="p-6">
               <div className="flex justify-between mb-4">
                 <h2 className="text-lg font-bold">Reviewer Feedback</h2>
-                <button onClick={() => setShowReview(false)}>
-                  <X />
-                </button>
+                <button onClick={() => setShowReview(false)}><X /></button>
               </div>
-
               <p className="text-sm text-slate-600 italic">
                 {manuscript.reviewerComments || "No comments"}
               </p>
@@ -155,12 +174,12 @@ const ManuscriptCard = ({ manuscript, onDelete, onEdit }) => {
         </div>
       )}
 
-      {/* ===== DELETE CONFIRM MODAL (COMMON) ===== */}
+      {/* Delete Modal */}
       <ConfirmModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         title="Delete Manuscript?"
-        message="Are you sure you want to delete this manuscript? This action cannot be undone."
+        message="Are you sure? This cannot be undone."
         confirmText="Yes, Delete"
         onConfirm={() => {
           onDelete(manuscript._id);

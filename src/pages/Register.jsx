@@ -58,8 +58,10 @@ export default function Register() {
             <span>Academic Excellence</span>
           </motion.div>
           
-          <motion.h1 variants={itemVars} className="text-6xl font-black leading-tight tracking-tighter">
-            Join the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Hub</span> of Research.
+          <motion.h1 variants={itemVars} className="text-2xl font-black leading-tight tracking-tighter">
+            Join the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
+              
+             PSYCHOLOGICAL JOURNAL Hub</span> of Research.
           </motion.h1>
           
           <div className="space-y-6 pt-4">

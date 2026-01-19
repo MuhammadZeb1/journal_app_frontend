@@ -61,12 +61,17 @@ export default function Login() {
           className="absolute top-[-5%] right-[-5%] w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]" 
         />
         <motion.div initial="hidden" animate="visible" variants={containerVars} className="max-w-md space-y-6 text-white relative z-10">
-          <motion.div variants={itemVars} className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold uppercase rounded-full backdrop-blur-md">
+          <motion.div variants={itemVars}
+          
+          className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-300 
+          text-xs font-bold uppercase rounded-full backdrop-blur-md">
             <Sparkles size={14} />
             <span>Welcome Back</span>
           </motion.div>
-          <motion.h1 variants={itemVars} className="text-6xl font-black tracking-tighter leading-tight">
-            Publi<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Sync.</span>
+          <motion.h1 variants={itemVars} className="text-3xl font-black tracking-tighter leading-tight">
+            PSYCHOLOGICAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
+              
+              JOURNAL.</span>
           </motion.h1>
           <motion.p variants={itemVars} className="text-lg text-slate-300 leading-relaxed">
             The central hub for academic research, peer reviews, and manuscript management. 
