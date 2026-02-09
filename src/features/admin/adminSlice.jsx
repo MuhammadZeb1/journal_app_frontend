@@ -53,6 +53,40 @@ export const assignReviewer = createAsyncThunk(
   }
 );
 
+// DOWNLOAD MANUSCRIPT (Admin) - Updated to handle blob
+export const downloadManuscript = createAsyncThunk(
+  "admin/downloadManuscript",
+  async (manuscriptId, { rejectWithValue }) => {
+    try {
+      const res = await API.get(`/admin/manuscripts/${manuscriptId}/download`, {
+        responseType: "blob", // Important
+      });
+
+      // Extract filename from response headers if available
+      const disposition = res.headers["content-disposition"];
+      let filename = "manuscript";
+      if (disposition && disposition.includes("filename=")) {
+        filename = disposition.split("filename=")[1].replace(/"/g, "");
+      }
+
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      return filename;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to download manuscript");
+    }
+  }
+);
+
 const adminManuscriptsSlice = createSlice({
   name: "adminManuscripts",
   initialState: {
@@ -64,7 +98,11 @@ const adminManuscriptsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAllManuscripts.pending, (state) => { state.loading = true; })
+      // FETCH
+      .addCase(fetchAllManuscripts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchAllManuscripts.fulfilled, (state, action) => {
         state.loading = false;
         state.manuscripts = action.payload;
@@ -73,15 +111,46 @@ const adminManuscriptsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Handle Publish Toggle and Assign Reviewer (both update a single manuscript)
-      .addMatcher(
-        (action) => [togglePublishStatus.fulfilled.type, assignReviewer.fulfilled.type].includes(action.type),
-        (state, action) => {
-          state.loading = false;
-          const index = state.manuscripts.findIndex((m) => m._id === action.payload._id);
-          if (index !== -1) state.manuscripts[index] = action.payload;
-        }
-      );
+
+      // TOGGLE PUBLISH
+      .addCase(togglePublishStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(togglePublishStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.manuscripts.findIndex(m => m._id === action.payload._id);
+        if (index !== -1) state.manuscripts[index] = action.payload;
+      })
+      .addCase(togglePublishStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // ASSIGN REVIEWER
+      .addCase(assignReviewer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(assignReviewer.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.manuscripts.findIndex(m => m._id === action.payload._id);
+        if (index !== -1) state.manuscripts[index] = action.payload;
+      })
+      .addCase(assignReviewer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // FETCH EXPERTS
+      .addCase(fetchExperts.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchExperts.fulfilled, (state, action) => { state.loading = false; state.experts = action.payload; })
+      .addCase(fetchExperts.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+
+      // DOWNLOAD
+      .addCase(downloadManuscript.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(downloadManuscript.fulfilled, (state) => { state.loading = false; })
+      .addCase(downloadManuscript.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
   },
 });
 

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { togglePublishStatus } from "../../features/admin/adminSlice.jsx";
 import { toast } from "react-toastify";
-import ConfirmModal from "../ConfirmModal.jsx"; // 🔹 reusable modal
+import ConfirmModal from "../ConfirmModal.jsx";
 
 const statusStyles = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -15,12 +15,44 @@ const statusStyles = {
   published: "bg-slate-900 text-indigo-400 border-slate-800",
 };
 
-const AdminManuscriptCard = ({ manuscript, onRead }) => {
+const AdminManuscriptCard = ({ manuscript }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // ✅ DOWNLOAD / VIEW FILE
+  const handleRead = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch(`/api/admin/manuscripts/${manuscript._id}/download`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch file");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = manuscript.filename || "manuscript.pdf"; // original filename
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to open manuscript");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ PUBLISH / UNPUBLISH
   const handleTogglePublish = async () => {
     setLoading(true);
     const action = manuscript.status === "published" ? "Unpublish" : "Publish";
@@ -28,7 +60,7 @@ const AdminManuscriptCard = ({ manuscript, onRead }) => {
       await dispatch(togglePublishStatus(manuscript._id)).unwrap();
       toast.success(`Manuscript ${action}ed successfully`);
     } catch (err) {
-      toast.error(err || "Failed to update status");
+      toast.error(err?.message || "Failed to update status");
     } finally {
       setLoading(false);
       setShowPublishModal(false);
@@ -72,11 +104,17 @@ const AdminManuscriptCard = ({ manuscript, onRead }) => {
 
           {/* Action Buttons */}
           <div className="flex gap-2 mt-5">
+            {/* ✅ Read Button */}
             <button
-              onClick={() => onRead(manuscript)}
-              className="flex-1 px-3 py-2 bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-bold hover:bg-slate-100 flex items-center justify-center gap-2"
+              onClick={handleRead}
+              disabled={loading}
+              className={`flex-1 px-3 py-2 rounded-lg flex items-center justify-center gap-2 text-xs font-bold ${
+                loading
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100"
+              }`}
             >
-              <Eye size={14} /> Read
+              <Eye size={14} /> {loading ? "Loading..." : "Read"}
             </button>
 
             {manuscript.status === "pending" && (

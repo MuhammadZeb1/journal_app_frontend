@@ -1,45 +1,46 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
-import toast from "daisyui/components/toast";
+import { toast } from "react-hot-toast";
+import API from "../api/authApi";
 
 export default function QuickInquiryForm() {
   const [form, setForm] = useState({
     name: "",
     message: "",
-    email: "zebafridiuu@gmail.com", // always your email
   });
 
   const [loading, setLoading] = useState(false);
 
-  // handle input changes
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
-  // send email on submit
   const handleSend = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/email/inquiry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: form.name, message: form.message }),
+      const { data } = await API.post("/email/inquiry", {
+        name: form.name,
+        message: form.message,
       });
 
-      const data = await res.json();
-      toast.success(data.message); // show success message
-      setForm({ name: "", message: "", email: "zebafridiuu@gmail.com" }); // reset form
-    } catch (err) {
-      toast.error(err.message);
-      console.error(err);
-    }
+      toast.success(data.message || "Message sent successfully ✅");
 
-    setLoading(false);
+      setForm({ name: "", message: "" });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to send message ❌"
+      );
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold mb-4 text-center">Quick Inquiry</h2>
+
       <form onSubmit={handleSend} className="grid gap-4">
         <input
           type="text"
@@ -50,13 +51,7 @@ export default function QuickInquiryForm() {
           required
           className="border p-3 rounded-lg w-full"
         />
-        <input
-          type="email"
-          name="email"
-          value={form.email}
-          readOnly
-          className="border p-3 rounded-lg w-full bg-gray-100"
-        />
+
         <textarea
           name="message"
           value={form.message}
@@ -65,6 +60,7 @@ export default function QuickInquiryForm() {
           required
           className="border p-3 rounded-lg w-full h-32"
         />
+
         <button
           type="submit"
           disabled={loading}

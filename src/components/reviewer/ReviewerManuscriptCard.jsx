@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Eye, Play, Check, X, FileText, Loader2 } from "lucide-react";
-import ConfirmModal from "../ConfirmModal"; // 🔹 reusable modal
+import ConfirmModal from "../ConfirmModal";
+import API from "../../api/authApi.js"; // ✅ use your existing API instance
 
 const statusStyles = {
   submitted: "bg-blue-100 text-blue-700",
@@ -9,21 +10,40 @@ const statusStyles = {
   rejected: "bg-rose-100 text-rose-700",
 };
 
-const ReviewerManuscriptCard = ({ manuscript, onRead, onStartReview, onSubmitReview }) => {
+const ReviewerManuscriptCard = ({ manuscript, onStartReview, onSubmitReview }) => {
   const [reviewText, setReviewText] = useState("");
   const [isOpening, setIsOpening] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitDecision, setSubmitDecision] = useState(null); // "accepted" or "rejected"
   const [loading, setLoading] = useState(false);
 
-  // Local handler for reading to show a loading state
+  // ✅ Cloudinary / backend download
   const handleReadClick = async () => {
     setIsOpening(true);
-    await onRead(manuscript);
-    setIsOpening(false);
+    try {
+      const res = await API.get(`/reviewer/manuscripts/${manuscript._id}/file`, {
+        responseType: "blob", // important for file download
+      });
+
+      const blob = new Blob([res.data], { type: manuscript.contentType || "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = manuscript.filename || "manuscript.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Failed to open manuscript");
+    } finally {
+      setIsOpening(false);
+    }
   };
 
-  // Open modal with the decision type
   const handlePrepareSubmit = (decision) => {
     if (!reviewText.trim() || reviewText.trim().length < 10) {
       alert("You must write at least 10 characters for the review.");
@@ -33,19 +53,18 @@ const ReviewerManuscriptCard = ({ manuscript, onRead, onStartReview, onSubmitRev
     setShowSubmitModal(true);
   };
 
-  // Confirm modal submission
   const handleConfirmSubmit = async () => {
     setLoading(true);
     await onSubmitReview(manuscript, submitDecision, reviewText);
     setLoading(false);
     setShowSubmitModal(false);
-    setReviewText(""); // optional: clear text after submit
+    setReviewText("");
   };
 
   return (
     <>
       <div className="flex flex-col md:flex-row gap-6 border rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition-shadow mb-4">
-        {/* Thumbnail Section */}
+        {/* Thumbnail */}
         <div className="w-full md:w-32 h-44 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 shadow-inner">
           {manuscript.imageUrl ? (
             <img src={manuscript.imageUrl} alt="Manuscript" className="w-full h-full object-cover" />
@@ -57,7 +76,7 @@ const ReviewerManuscriptCard = ({ manuscript, onRead, onStartReview, onSubmitRev
           )}
         </div>
 
-        {/* Content Section */}
+        {/* Content */}
         <div className="flex-1 flex flex-col">
           <div className="flex justify-between items-start">
             <div>
@@ -69,7 +88,6 @@ const ReviewerManuscriptCard = ({ manuscript, onRead, onStartReview, onSubmitRev
             </span>
           </div>
 
-          {/* Review Form (Only visible when under_review) */}
           {manuscript.status === "under_review" && (
             <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
               <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">
@@ -98,7 +116,6 @@ const ReviewerManuscriptCard = ({ manuscript, onRead, onStartReview, onSubmitRev
             </div>
           )}
 
-          {/* Primary Actions */}
           <div className="flex gap-3 mt-auto pt-4">
             <button
               onClick={handleReadClick}
@@ -121,7 +138,6 @@ const ReviewerManuscriptCard = ({ manuscript, onRead, onStartReview, onSubmitRev
         </div>
       </div>
 
-      {/* ===== SUBMIT REVIEW CONFIRM MODAL ===== */}
       <ConfirmModal
         isOpen={showSubmitModal}
         onClose={() => setShowSubmitModal(false)}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../api/authApi"; // ✅ import your axios instance
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -12,9 +12,8 @@ export default function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`http://localhost:5000/api/auth/reset-password/${token}`, {
-        password
-      });
+      // ✅ Use axios instance instead of hardcoding URL
+      const res = await API.post(`/auth/reset-password/${token}`, { password });
       setMessage(res.data.message);
       setError("");
       setTimeout(() => navigate("/login"), 3000); // redirect to login after 3s
